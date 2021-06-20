@@ -2,7 +2,6 @@ package com.recru.application.rest;
 
 
 import com.recru.application.dto.GithubLoginData;
-import com.recru.application.repository.LoginDataRepository;
 import com.recru.application.service.GithubDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

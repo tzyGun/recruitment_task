@@ -10,12 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 
 @Service
 public class GithubDataService {
 
     private final LoginDataRepository loginDataRepository;
+    private final String GITHUB_USERS_URL_API = "https://api.github.com/users/";
+
 
     public GithubDataService(LoginDataRepository loginDataRepository) {
         this.loginDataRepository = loginDataRepository;
@@ -40,22 +43,23 @@ public class GithubDataService {
                 .createdAt(LocalDate.now());
     }
 
-    private void saveUserQuery(LoginStats loginStats) {
-        if(loginDataRepository.existsByLogin(loginStats.getLogin())) {
+    @Transactional
+    public void saveUserQuery(LoginStats loginStats) {
+        if (loginDataRepository.existsByLogin(loginStats.getLogin())) {
             var loginStats1 = loginDataRepository.findByLogin(loginStats.getLogin());
             loginStats1.requestCount(loginStats1.getRequestCount() + 1);
             loginDataRepository.save(loginStats1);
         } else {
+            loginStats.requestCount(1);
             loginDataRepository.save(loginStats);
         }
     }
 
     private GithubDataResponse callGithubServiceAPI(String login) {
         RestTemplate restTemplate = new RestTemplate();
-        String fooResourceUrl
-                = "https://api.github.com/users/";
+
         ResponseEntity<GithubDataResponse> response
-                = restTemplate.getForEntity(fooResourceUrl + login, GithubDataResponse.class);
+                = restTemplate.getForEntity(GITHUB_USERS_URL_API.concat(login), GithubDataResponse.class);
         return response.getBody();
     }
 }
