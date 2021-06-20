@@ -1,0 +1,11 @@
+.product-item {
+  display: flex;
+}
+
+.product-name {
+  align-self: flex-start;
+}
+
+.product-price {
+  align-self: flex-end;
+}
