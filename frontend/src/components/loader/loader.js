@@ -1,10 +1,10 @@
-import { oval } from '../../assets/oval.svg'
+import './loader.css'
 import React from 'react'
 
 export const Loader = () => {
     return (
-        <img className="loader" src="../../assets/oval.svg">
-
-        </img>
+        <div className="loader">
+            Ładowanie zawartości...
+        </div>
     )
 }
