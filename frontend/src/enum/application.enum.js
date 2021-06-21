@@ -1,0 +1,5 @@
+const DEBOUNCE_TIME_MS=200
+
+export {
+    DEBOUNCE_TIME_MS
+}

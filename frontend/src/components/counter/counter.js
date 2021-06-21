@@ -1,51 +1,49 @@
 import React from 'react'
-import { useReducer } from 'react';
-import { checkProduct } from '../../api/call-api';
-
+import { useReducer,useEffect , useState, useCallback} from 'react';
+import { checkProduct, handlerApiError } from '../../api/call-api';
+import { debounce } from '../../utils/debounce';
+import { DEBOUNCE_TIME_MS } from '../../enum/application.enum';
 export const Counter = ({ item }) => {
-    const initialState = {
-        count: 0,
-        isButtonDisabled: false,
-        isRemoveButtonDisabled: false,
-        isAddButtonDisabled: false
-    };
+    const [counter, updateCounter] = useState(0);
 
     const isProductblocked = () => item?.isBlocked
 
-    const reducer = (state, action) => {
-        switch (action.type) {
-            case 'increment':
-                if (state.count === item.max) {
-                    return {
-                        count: state.count,
-                        isAddButtonDisabled: true
-                    }
-                }
-                return { count: state.count + 1 };
-            case 'decrement':
-                if (state.count === 0) {
-                    return {
-                        count: state.count,
-                        isRemoveButtonDisabled: true
-                    }
-                }
-                return {
-                    count: state.count - 1
-                };
-            default:
-                throw new Error();
+    useEffect(() => {
+        updateCounter(item.min)
+        return () => {
+            
         }
-    }
+    }, [])
 
-    const [state, dispatch] = useReducer(reducer, initialState);
-    const isRemoveButtonDisabled = () => state.isRemoveButtonDisabled
-    const isAddButtonDisabled = () => state.isAddButtonDisabled
+
+    useEffect(() => {
+        verify(counter)
+        return () => {
+            
+        }
+    }, [counter])
+
+
+    const verify = useCallback(
+        debounce(counter => checkProduct({
+            pid: item.pid,
+            quantity: counter
+        })
+        .then(response=> console.log(response))
+        .catch(err=> handlerApiError(err)), DEBOUNCE_TIME_MS),
+        []
+      );
+
+    const isRemoveButtonDisabled = () => counter == item.min
+
+    const  incrementCounter = () => updateCounter(counter + 1)
+    const  decrementCounter = () => updateCounter(counter < 0 ? 0 : counter - 1)
 
     return (
         <div>
-            <button disabled={isProductblocked() || isRemoveButtonDisabled()} onClick={() => dispatch({ type: 'decrement' })}>-</button>
-            <button disabled={isProductblocked() || isAddButtonDisabled()} onClick={() => dispatch({ type: 'increment' })}>+</button>
-            <span>Obecnie masz {state.count} sztuk produktu: </span>
+            <button disabled={isProductblocked() || isRemoveButtonDisabled()} onClick={() => decrementCounter()}>-</button>
+            <button disabled={isProductblocked()} onClick={() => incrementCounter()}>+</button>
+            <span>Obecnie masz {counter} sztuk produktu: </span>
         </div >
     );
 }

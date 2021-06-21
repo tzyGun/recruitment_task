@@ -6,15 +6,19 @@ const getCart = async () => {
     return data
 }
 
-const checkProduct = async (requestData) => {
-    const response = await axios.post('/api/product/check', requestData)
-    const { data } = response
-    return data
-}
+const checkProduct = async (requestData) => axios.post('/api/product/check', requestData)
+
+
+const handlerApiError = (error) => {
+        if(error) {
+            console.log(error)
+        }
+} 
 
 export {
     getCart,
-    checkProduct
+    checkProduct,
+    handlerApiError
 }
 
 
