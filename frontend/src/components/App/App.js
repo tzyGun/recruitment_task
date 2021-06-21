@@ -9,6 +9,8 @@ import { Summary } from '../summary/summary';
 const App = () => {
   const [appState, setAppState] = useState({ isDataLoaded: false })
   const [cart, setCart] = useState([])
+  const [summary, setSummary] = useState([])
+
 
 
   useEffect(async () => {
@@ -20,14 +22,23 @@ const App = () => {
     }
   }, [])
 
-  const viewContent = () => appState.isDataLoaded ? cart.map((item, index) => <ProductItem key={index} item={item} />) : <Loader />
+  useEffect(() => {
+    console.log(summary)
+    return () => {
+    }
+  }, [summary])
+
+  const viewContent = () => appState.isDataLoaded ? 
+  cart.map((item, index) => <ProductItem key={index} item={item} onCounterChange={(item) => setSummary((prev)=> [...prev, item])}/>) : <Loader />
+
+  const calculateSummary = ()=>{}
   return (
     <div className="container">
       <h3>Lista produktów</h3>
       <ul>
         {viewContent()}
       </ul>
-      <Summary />
+      <Summary summary={calculateSummary()}/>
     </div>
   );
 };

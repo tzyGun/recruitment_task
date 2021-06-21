@@ -1,9 +1,9 @@
 import React from 'react'
-import { useReducer,useEffect , useState, useCallback} from 'react';
+import { useEffect , useState, useCallback} from 'react';
 import { checkProduct, handlerApiError } from '../../api/call-api';
 import { debounce } from '../../utils/debounce';
 import { DEBOUNCE_TIME_MS } from '../../enum/application.enum';
-export const Counter = ({ item }) => {
+export const Counter = ({ item, onCounterChange }) => {
     const [counter, updateCounter] = useState(0);
 
     const isProductblocked = () => item?.isBlocked
@@ -23,13 +23,13 @@ export const Counter = ({ item }) => {
         }
     }, [counter])
 
-
     const verify = useCallback(
         debounce(counter => checkProduct({
             pid: item.pid,
             quantity: counter
         })
-        .then(response=> console.log(response))
+        .then(response=> {
+            onCounterChange(item)})
         .catch(err=> handlerApiError(err)), DEBOUNCE_TIME_MS),
         []
       );
@@ -44,7 +44,7 @@ export const Counter = ({ item }) => {
             <button disabled={isProductblocked() || isRemoveButtonDisabled()} onClick={() => decrementCounter()}>-</button>
             <button disabled={isProductblocked()} onClick={() => incrementCounter()}>+</button>
             <span>Obecnie masz {counter} sztuk produktu: </span>
-        </div >
+        </div>
     );
 }
 
