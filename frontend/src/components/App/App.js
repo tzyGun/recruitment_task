@@ -10,6 +10,7 @@ const App = () => {
   const [appState, setAppState] = useState({ isDataLoaded: false })
   const [cart, setCart] = useState([])
   const [summary, setSummary] = useState([])
+  const [quote, setQuote] = useState(0.0)
 
 
 
@@ -28,17 +29,34 @@ const App = () => {
     }
   }, [summary])
 
-  const viewContent = () => appState.isDataLoaded ? 
-  cart.map((item, index) => <ProductItem key={index} item={item} onCounterChange={(item) => setSummary((prev)=> [...prev, item])}/>) : <Loader />
+  const calculateQuote = (array) => {
+    const sum = array.reduce(function (previousValue, currentValue, index, array) {
+      return previousValue + (currentValue.price * currentValue.quantity)
+    }, 0);
+    setQuote(sum)
+    console.log(sum)
+  }
+  const fillSummaryArray = (array, item) => {
+    if (array.find((el) => el.pid === item.pid)) {
+      const index = array.findIndex((el) => el.pid === item.pid)
+      array[index] = item
+      calculateQuote(array)
+      return [...array]
+    } else {
+      return [...array, item]
+    }
+  }
+  const viewContent = () => appState.isDataLoaded ?
+    cart.map((item, index) => <ProductItem key={index} item={item} onCounterChange={(item) => setSummary((prev) => fillSummaryArray(prev, item))} />) : <Loader />
 
-  const calculateSummary = ()=>{}
+  const calculateSummary = () => { }
   return (
     <div className="container">
       <h3>Lista produktów</h3>
       <ul>
         {viewContent()}
       </ul>
-      <Summary summary={calculateSummary()}/>
+      <Summary summary={quote} />
     </div>
   );
 };

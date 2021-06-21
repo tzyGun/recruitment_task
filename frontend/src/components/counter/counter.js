@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEffect , useState, useCallback} from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { checkProduct, handlerApiError } from '../../api/call-api';
 import { debounce } from '../../utils/debounce';
 import { DEBOUNCE_TIME_MS } from '../../enum/application.enum';
@@ -9,35 +9,33 @@ export const Counter = ({ item, onCounterChange }) => {
     const isProductblocked = () => item?.isBlocked
 
     useEffect(() => {
-        updateCounter(item.min)
-        return () => {
-            
-        }
-    }, [])
-
-
-    useEffect(() => {
         verify(counter)
         return () => {
-            
+
         }
     }, [counter])
 
     const verify = useCallback(
         debounce(counter => checkProduct({
             pid: item.pid,
+            price: item.price,
             quantity: counter
         })
-        .then(response=> {
-            onCounterChange(item)})
-        .catch(err=> handlerApiError(err)), DEBOUNCE_TIME_MS),
+            .then(response => {
+                onCounterChange({
+                    pid: item.pid,
+                    price: item.price,
+                    quantity: counter
+                })
+            })
+            .catch(err => handlerApiError(err)), DEBOUNCE_TIME_MS),
         []
-      );
+    );
 
     const isRemoveButtonDisabled = () => counter == item.min
 
-    const  incrementCounter = () => updateCounter(counter + 1)
-    const  decrementCounter = () => updateCounter(counter < 0 ? 0 : counter - 1)
+    const incrementCounter = () => updateCounter(counter + 1)
+    const decrementCounter = () => updateCounter(counter < 0 ? 0 : counter - 1)
 
     return (
         <div>
