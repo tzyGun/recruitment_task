@@ -8,55 +8,51 @@ import { Summary } from '../summary/summary';
 
 const App = () => {
   const [appState, setAppState] = useState({ isDataLoaded: false })
+  const [products, setProducts] = useState([])
   const [cart, setCart] = useState([])
-  const [summary, setSummary] = useState([])
-  const [quote, setQuote] = useState(0.0)
-
-
+  const [summary, setSummary] = useState(0.0)
 
   useEffect(async () => {
     const data = await getCart()
-    setCart((cart) => [...cart, ...data])
+    setProducts((product) => [...product, ...data])
     setAppState({ isDataLoaded: true })
     return () => {
-      setCart([])
+      setProducts([])
     }
   }, [])
 
   useEffect(() => {
-    console.log(summary)
+    setSummary(calculateSummary(cart))
     return () => {
     }
-  }, [summary])
+  }, [cart])
 
-  const calculateQuote = (array) => {
-    const sum = array.reduce(function (previousValue, currentValue, index, array) {
+  const calculateSummary = (array) => {
+    const summary = array.reduce(function (previousValue, currentValue) {
       return previousValue + (currentValue.price * currentValue.quantity)
     }, 0);
-    setQuote(sum)
-    console.log(sum)
+    return summary
   }
-  const fillSummaryArray = (array, item) => {
+
+  const fillCart = (array, item) => {
     if (array.find((el) => el.pid === item.pid)) {
       const index = array.findIndex((el) => el.pid === item.pid)
       array[index] = item
-      calculateQuote(array)
       return [...array]
     } else {
       return [...array, item]
     }
   }
   const viewContent = () => appState.isDataLoaded ?
-    cart.map((item, index) => <ProductItem key={index} item={item} onCounterChange={(item) => setSummary((prev) => fillSummaryArray(prev, item))} />) : <Loader />
+    products.map((item, index) => <ProductItem key={index} item={item} onCounterChange={(item) => setCart((prev) => fillCart(prev, item))} />) : <Loader />
 
-  const calculateSummary = () => { }
   return (
     <div className="container">
       <h3>Lista produktów</h3>
       <ul>
         {viewContent()}
       </ul>
-      <Summary summary={quote} />
+      <Summary summary={summary} />
     </div>
   );
 };

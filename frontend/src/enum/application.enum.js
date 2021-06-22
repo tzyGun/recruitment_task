@@ -1,4 +1,4 @@
-const DEBOUNCE_TIME_MS=200
+const DEBOUNCE_TIME_MS = 100
 
 export {
     DEBOUNCE_TIME_MS
