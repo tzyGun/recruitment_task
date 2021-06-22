@@ -6,7 +6,7 @@ import { DEBOUNCE_TIME_MS } from '../../enum/application.enum';
 
 
 export const Counter = ({ item, onCounterChange, onErrorCallback }) => {
-    const [counter, updateCounter] = useState(0);
+    const [counter, setCounter] = useState(0);
 
     const isProductblocked = () => item?.isBlocked
 
@@ -44,8 +44,8 @@ export const Counter = ({ item, onCounterChange, onErrorCallback }) => {
 
     const isRemoveButtonDisabled = () => counter == item.min
 
-    const incrementCounter = () => updateCounter(counter + 1)
-    const decrementCounter = () => updateCounter(counter < 0 ? 0 : counter - 1)
+    const incrementCounter = () => setCounter(counter + 1)
+    const decrementCounter = () => setCounter(counter == 0 ? 0 : counter - 1)
 
     return (
         <div>
