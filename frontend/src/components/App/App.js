@@ -34,6 +34,12 @@ const App = () => {
     return summary
   }
 
+  const resetItem = (array, item) => {
+    const index = array.findIndex((el) => el.pid === item.pid)
+    array[index] = item
+    return [...array]
+  }
+
   const fillCart = (array, item) => {
     if (array.find((el) => el.pid === item.pid)) {
       const index = array.findIndex((el) => el.pid === item.pid)
@@ -44,7 +50,8 @@ const App = () => {
     }
   }
   const viewContent = () => appState.isDataLoaded ?
-    products.map((item, index) => <ProductItem key={index} item={item} onCounterChange={(item) => setCart((prev) => fillCart(prev, item))} />) : <Loader />
+    products.map((item, index) => <ProductItem key={index} item={item} onErrorCallback={(item) => setCart((prev) => resetItem(prev, item))}
+      onCounterChange={(item) => setCart((prev) => fillCart(prev, item))} />) : <Loader />
 
   return (
     <div className="container">

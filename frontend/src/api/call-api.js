@@ -9,9 +9,8 @@ const getCart = async () => {
 const checkProduct = async (requestData) => axios.post('/api/product/check', requestData)
 
 
-const handlerApiError = (error) => {
+const handlerApiError = (error, item) => {
     if (error) {
-        console.log(error)
         if (error.response) {
             console.log(error.response.data);
             console.log(error.response.status);

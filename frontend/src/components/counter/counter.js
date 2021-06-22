@@ -3,7 +3,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { checkProduct, handlerApiError } from '../../api/call-api';
 import { debounce } from '../../utils/debounce';
 import { DEBOUNCE_TIME_MS } from '../../enum/application.enum';
-export const Counter = ({ item, onCounterChange }) => {
+
+
+export const Counter = ({ item, onCounterChange, onErrorCallback }) => {
     const [counter, updateCounter] = useState(0);
 
     const isProductblocked = () => item?.isBlocked
@@ -28,7 +30,15 @@ export const Counter = ({ item, onCounterChange }) => {
                     quantity: counter
                 })
             })
-            .catch(err => handlerApiError(err)), DEBOUNCE_TIME_MS),
+            .catch(err => {
+                handlerApiError(err)
+                onErrorCallback({
+                    price: item.price,
+                    pid: item.pid,
+                    quantity: 0
+                })
+                setCounter(0)
+            }), DEBOUNCE_TIME_MS),
         []
     );
 
