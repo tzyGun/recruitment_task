@@ -19,14 +19,13 @@ services:
       PGADMIN_DEFAULT_PASSWORD: github
     ports:
       - "5050:80"
-  backend:
-    container_name: backend
-    image: springio/application
-    restart: always
-    ports:
-      - "8080:8080"
   frontend:
     container_name: frontend
     image: task/frontend
     ports:
       - "3030:3030"
+  backend:
+    container_name: backend
+    image: task/backend
+    restart: always
+    ports:

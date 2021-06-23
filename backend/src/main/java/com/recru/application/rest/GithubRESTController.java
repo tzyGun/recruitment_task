@@ -2,6 +2,7 @@ package com.recru.application.rest;
 
 
 import com.recru.application.dto.GithubLoginData;
+import com.recru.application.entity.LoginStats;
 import com.recru.application.service.GithubDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,11 @@ public class GithubRESTController {
 
     @GetMapping("/users/{login}")
     GithubLoginData getUserByLogin(@PathVariable String login) {
-        return githubDataService.getLogin(login);
+        LoginStats loginStats = new LoginStats();
+
+        GithubLoginData githubLoginData = githubDataService.getLogin(login);
+        githubDataService.saveUserQuery(loginStats
+                .login(githubLoginData.getLogin()));
+        return githubLoginData;
     }
 }

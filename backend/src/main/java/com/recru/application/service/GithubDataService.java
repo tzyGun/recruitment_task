@@ -6,9 +6,7 @@ import com.recru.application.dto.GithubLoginData;
 import com.recru.application.entity.LoginStats;
 import com.recru.application.model.GithubDataResponse;
 import com.recru.application.repository.LoginDataRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
@@ -17,20 +15,17 @@ import java.time.LocalDate;
 public class GithubDataService {
 
     private final LoginDataRepository loginDataRepository;
-    private final String GITHUB_USERS_URL_API = "https://api.github.com/users/";
+    private final GithubAPIService githubAPIService;
 
-
-    public GithubDataService(LoginDataRepository loginDataRepository) {
+    public GithubDataService(LoginDataRepository loginDataRepository, GithubAPIService githubAPIService) {
         this.loginDataRepository = loginDataRepository;
+        this.githubAPIService = githubAPIService;
     }
 
     public GithubLoginData getLogin(String login) {
         GithubLoginData githubLoginData = new GithubLoginData();
-        GithubDataResponse responseFromGithub = callGithubServiceAPI(login);
-        LoginStats loginStats = new LoginStats();
 
-        saveUserQuery(loginStats
-                .login(responseFromGithub.getLogin()));
+        GithubDataResponse responseFromGithub = githubAPIService.callGithubServiceAPI(login);
 
         return githubLoginData.login(responseFromGithub.getLogin())
                 .avatarUrl(responseFromGithub.getAvatar_url())
@@ -53,13 +48,5 @@ public class GithubDataService {
             loginStats.requestCount(1);
             loginDataRepository.save(loginStats);
         }
-    }
-
-    private GithubDataResponse callGithubServiceAPI(String login) {
-        RestTemplate restTemplate = new RestTemplate();
-
-        ResponseEntity<GithubDataResponse> response
-                = restTemplate.getForEntity(GITHUB_USERS_URL_API.concat(login), GithubDataResponse.class);
-        return response.getBody();
     }
 }
